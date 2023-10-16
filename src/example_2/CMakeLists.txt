@@ -19,12 +19,16 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+# need custom find_package for python3
+find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
+
 
 ## COMPILE
 add_library(
   ros2_control_demo_example_2
   SHARED
   hardware/diffbot_system.cpp
+  hardware/penguinpi_comms.cpp
 )
 target_compile_features(ros2_control_demo_example_2 PUBLIC cxx_std_17)
 target_include_directories(ros2_control_demo_example_2 PUBLIC
@@ -34,6 +38,7 @@ $<INSTALL_INTERFACE:include/ros2_control_demo_example_2>
 ament_target_dependencies(
   ros2_control_demo_example_2 PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
+  Python3
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
