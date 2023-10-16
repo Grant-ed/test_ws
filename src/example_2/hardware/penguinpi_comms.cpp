@@ -58,6 +58,13 @@ uint16_t* PenguinPiComms::get_encoders() {
     return encoders;
 }
 
+void PenguinPiComms::set_velocity(int8_t left, int8_t right) {
+    PyObject *pVelocity = PyList_New(0);
+    PyList_Append(pVelocity, PyLong_FromLong(left));
+    PyList_Append(pVelocity, PyLong_FromLong(right));
+    PyObject_CallMethod(pInstance, "set_velocity", "(O)", pVelocity);
+}
+
 uint16_t* PenguinPiComms::set_velocity_get_encoders(int8_t left, int8_t right) {
     static uint16_t encoders[2];
     PyObject *pVelocity = PyList_New(0);
