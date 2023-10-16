@@ -14,7 +14,6 @@ public:
     bool connected();
     void set_velocity(int8_t left, int8_t right);
     uint16_t* get_encoders();
-    uint16_t* set_velocity(int8_t left, int8_t right);
     uint16_t* set_velocity_get_encoders(int8_t left, int8_t right);
     void stop_all();
     void clear_data();
