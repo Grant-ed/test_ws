@@ -27,6 +27,7 @@ find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development)
 add_library(
   ros2_control_demo_example_2
   SHARED
+  hardware/penguinpi_comms.cpp
   hardware/diffbot_system.cpp
 )
 target_compile_features(ros2_control_demo_example_2 PUBLIC cxx_std_17)
