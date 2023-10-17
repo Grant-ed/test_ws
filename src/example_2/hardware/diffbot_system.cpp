@@ -130,6 +130,16 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Activating ...please wait...");
+
+  // print current directory for debugging using get_current_dir_name()
+  char* cwd = get_current_dir_name();
+  if (cwd != nullptr) {
+    RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Current directory: %s", cwd);
+    free(cwd);  // Don't forget to free the memory
+  } else {
+    RCLCPP_WARN(rclcpp::get_logger("DiffBotSystemHardware"), "Failed to get current directory");
+  }
+
   comms_.init();
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully activated!");
 
@@ -149,6 +159,11 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_deactivate(
 hardware_interface::return_type DiffBotSystemHardware::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
+  if (!comms_.connected())
+  {
+    return hardware_interface::return_type::ERROR;
+  }
+
   double delta_seconds = period.seconds();
 
   uint16_t * encoders = comms_.get_encoders();
@@ -169,6 +184,11 @@ hardware_interface::return_type DiffBotSystemHardware::read(
 hardware_interface::return_type ros2_control_demo_example_2 ::DiffBotSystemHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
+  if (!comms_.connected())
+  {
+    return hardware_interface::return_type::ERROR;
+  }
+  
   // From A mobile robot for education: the PenguinPi, Section 4.2:
   // Hardware takes velocity input as 5 * encoder counts per loop, in the range -100 to 100.
   //    cmd is in rad/s, so convert to 5 * desired counts per loop

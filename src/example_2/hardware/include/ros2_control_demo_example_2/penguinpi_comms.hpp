@@ -19,7 +19,15 @@ public:
     }
 
     void init() {
+        
         Py_Initialize();
+        
+        // Add the provided directory to sys.path
+        PyObject *sysPath = PySys_GetObject((char*)"path");
+        PyObject *path = PyUnicode_FromString("/home/pi/test_ws/install/ros2_control_demo_example_2/include/ros2_control_demo_example_2/ros2_control_demo_example_2/PenguinPiLib");
+        PyList_Append(sysPath, path);
+        Py_DECREF(path);
+
         PyObject *pName = PyUnicode_DecodeFSDefault("penguinPi");
         pModule = PyImport_Import(pName);
         Py_XDECREF(pName);
@@ -33,6 +41,7 @@ public:
             initialised = true;
         } else {
             PyErr_Print();
+            initialised = false;
         }
     }
 

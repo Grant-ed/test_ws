@@ -20,7 +20,7 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
 endforeach()
 
 # need custom find_package for python3
-find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development)
 
 
 ## COMPILE
@@ -37,7 +37,7 @@ $<INSTALL_INTERFACE:include/ros2_control_demo_example_2>
 ament_target_dependencies(
   ros2_control_demo_example_2 PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
-  Python3
+  Python
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
