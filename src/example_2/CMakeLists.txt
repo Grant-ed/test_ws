@@ -19,11 +19,20 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+include_directories(/home/pi/libserial/src/)
+set(SOURCES
+  /home/pi/libserial/src/SerialPort.cpp
+  /home/pi/libserial/src/SerialStream.cpp
+  /home/pi/libserial/src/SerialStreamBuf.cpp
+)
+
 ## COMPILE
 add_library(
   ros2_control_demo_example_2
   SHARED
   hardware/diffbot_system.cpp
+  hardware/arduino_comms.cpp
+  ${SOURCES}
 )
 target_compile_features(ros2_control_demo_example_2 PUBLIC cxx_std_17)
 target_include_directories(ros2_control_demo_example_2 PUBLIC

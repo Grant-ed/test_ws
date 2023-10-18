@@ -66,12 +66,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        caster_frontal_wheel:
+        back_caster:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        caster_rear_wheel:
+        base_footprint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
