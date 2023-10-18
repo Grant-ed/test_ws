@@ -345,7 +345,8 @@ private:
 
     LibSerial::DataBuffer dgram;
     serial_conn_.Read(dgram, paylenint - 1, timeout_ms_);
-    if (dgram.size() != paylenint - 1)
+    // need to remember to cast size to an int
+    if (dgram.size() != static_cast<size_t>(paylenint - 1))
     {
       std::cout << "Error! Short read!" << std::endl;
       return LibSerial::DataBuffer();
