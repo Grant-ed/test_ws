@@ -131,16 +131,13 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_activate(
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Activating ...please wait...");
 
-  // print current directory for debugging using get_current_dir_name()
-  char* cwd = get_current_dir_name();
-  if (cwd != nullptr) {
-    RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Current directory: %s", cwd);
-    free(cwd);  // Don't forget to free the memory
-  } else {
-    RCLCPP_WARN(rclcpp::get_logger("DiffBotSystemHardware"), "Failed to get current directory");
+  comms_.init();
+
+  if (!comms_.connected())
+  {
+    return hardware_interface::CallbackReturn::ERROR;
   }
 
-  comms_.init();
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
