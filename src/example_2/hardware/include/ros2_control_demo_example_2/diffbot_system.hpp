@@ -32,7 +32,7 @@
 
 #include "ros2_control_demo_example_2/visibility_control.h"
 
-#include "ros2_control_demo_example_2/penguinpi_comms.h"
+#include "ros2_control_demo_example_2/arduino_comms.hpp"
 #include "ros2_control_demo_example_2/wheel.hpp"
 
 namespace ros2_control_demo_example_2
@@ -82,7 +82,7 @@ public:
 
 private:
 
-  PenguinPiComms comms_;
+  ArduinoComms comms_;
   Config cfg_;
   Wheel wheel_l_;
   Wheel wheel_r_;

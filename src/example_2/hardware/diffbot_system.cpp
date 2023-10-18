@@ -129,18 +129,41 @@ std::vector<hardware_interface::CommandInterface> DiffBotSystemHardware::export_
   return command_interfaces;
 }
 
+hardware_interface::CallbackReturn DiffBotSystemHardware::on_configure(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Configuring ...please wait...");
+  if (comms_.connected())
+  {
+    comms_.disconnect();
+  }
+  comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
+  RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully configured!");
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn DiffBotSystemHardware::on_cleanup(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Cleaning up ...please wait...");
+  if (comms_.connected())
+  {
+    comms_.disconnect();
+  }
+  RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully cleaned up!");
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
 hardware_interface::CallbackReturn DiffBotSystemHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Activating ...please wait...");
-
-  comms_.init();
-
   if (!comms_.connected())
   {
     return hardware_interface::CallbackReturn::ERROR;
   }
-
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -150,7 +173,6 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Deactivating ...please wait...");
-  comms_.close();
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully deactivated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -164,19 +186,19 @@ hardware_interface::return_type DiffBotSystemHardware::read(
     return hardware_interface::return_type::ERROR;
   }
 
+  int enc_l_prev = wheel_l_.enc;
+  int enc_r_prev = wheel_r_.enc;
+  comms_.read_encoder_values(wheel_l_.enc, wheel_r_.enc);
+
   double delta_seconds = period.seconds();
 
-  uint16_t * encoders = comms_.get_encoders();
-  wheel_l_.enc = encoders[0];
-  wheel_r_.enc = encoders[1];
-
-  double pos_prev = wheel_l_.pos;
   wheel_l_.pos = wheel_l_.calc_enc_angle();
-  wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
+  int delta_enc_l = wheel_l_.calc_delta_enc(wheel_l_.enc, enc_l_prev);
+  wheel_l_.vel = delta_enc_l / delta_seconds;
 
-  pos_prev = wheel_r_.pos;
   wheel_r_.pos = wheel_r_.calc_enc_angle();
-  wheel_r_.vel = (wheel_r_.pos - pos_prev) / delta_seconds;
+  int delta_enc_r = wheel_r_.calc_delta_enc(wheel_r_.enc, enc_r_prev);
+  wheel_r_.vel = delta_enc_r / delta_seconds;
   
   return hardware_interface::return_type::OK;
 }
@@ -203,7 +225,7 @@ hardware_interface::return_type ros2_control_demo_example_2 ::DiffBotSystemHardw
   motor_l_5x_counts_per_loop = std::max<int8_t>(std::min<int8_t>(motor_l_5x_counts_per_loop, 100), -100);
   motor_r_5x_counts_per_loop = std::max<int8_t>(std::min<int8_t>(motor_r_5x_counts_per_loop, 100), -100);
 
-  comms_.set_velocity(motor_l_5x_counts_per_loop, motor_r_5x_counts_per_loop);
+  comms_.set_motor_vel(motor_l_5x_counts_per_loop, motor_r_5x_counts_per_loop);
   return hardware_interface::return_type::OK;
 }
 
