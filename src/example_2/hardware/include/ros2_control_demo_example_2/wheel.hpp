@@ -10,7 +10,7 @@ class Wheel
     public:
 
     std::string name = "";
-    int enc = 0;
+    uint16_t enc = 0;
     double cmd = 0;
     double pos = 0;
     double vel = 0;
@@ -51,7 +51,7 @@ class Wheel
      * @param encoder The encoder value
      * @return The encoder angle in radians
      */
-    double calc_enc_angle(int encoder)
+    double calc_enc_angle(uint16_t encoder)
     {
       return encoder * rads_per_count;
     }
@@ -62,7 +62,7 @@ class Wheel
      * @param old_val The old encoder value
      * @return The difference between the two encoder values
      */
-    int calc_delta_enc(int new_val, int old_val)
+    int calc_delta_enc(uint16_t new_val, uint16_t old_val)
     {
       // convert to signed int
       int delta = new_val - old_val;
