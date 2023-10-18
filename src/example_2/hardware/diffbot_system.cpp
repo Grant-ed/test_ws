@@ -39,6 +39,9 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
   cfg_.left_wheel_name = (info_.hardware_parameters["left_wheel_name"]);
   cfg_.right_wheel_name = (info_.hardware_parameters["right_wheel_name"]);
   cfg_.loop_hz = std::stof(info_.hardware_parameters["loop_hz"]);
+  cfg_.device = info_.hardware_parameters["device"];
+  cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
+  cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
   cfg_.enc_ticks_per_rev = std::stoi(info_.hardware_parameters["enc_ticks_per_rev"]);
 
   wheel_l_.setup(cfg_.left_wheel_name, cfg_.enc_ticks_per_rev);
@@ -131,16 +134,13 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_activate(
 {
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Activating ...please wait...");
 
-  // print current directory for debugging using get_current_dir_name()
-  char* cwd = get_current_dir_name();
-  if (cwd != nullptr) {
-    RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Current directory: %s", cwd);
-    free(cwd);  // Don't forget to free the memory
-  } else {
-    RCLCPP_WARN(rclcpp::get_logger("DiffBotSystemHardware"), "Failed to get current directory");
+  comms_.init();
+
+  if (!comms_.connected())
+  {
+    return hardware_interface::CallbackReturn::ERROR;
   }
 
-  comms_.init();
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
